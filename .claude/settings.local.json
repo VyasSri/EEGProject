@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(env)",
-      "Bash(pip config *)",
-      "Bash(python -c \"import certifi; print\\(certifi.where\\(\\)\\)\")"
-    ]
-  }
-}

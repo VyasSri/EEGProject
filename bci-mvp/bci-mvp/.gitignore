@@ -5,6 +5,7 @@ artifacts/
 mlruns/
 mlflow.db
 optuna.db
+*.egg-info/
 data/*
 !data/.gitkeep
 node_modules/
