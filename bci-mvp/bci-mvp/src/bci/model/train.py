@@ -138,10 +138,21 @@ def main() -> None:
     p.add_argument("--export", action="store_true")
     p.add_argument("--subjects", type=int, nargs="+", default=[1, 2, 3])
     p.add_argument("--epochs", type=int, default=40)
+    p.add_argument("--use-best", action="store_true",
+                    help="Load the best hyperparameters from the Optuna sweep "
+                         "study before training/exporting.")
+    p.add_argument("--storage", default="sqlite:///optuna.db")
+    p.add_argument("--study", default="bci-mvp")
     args = p.parse_args()
     cfg = {"lr": 1e-3, "dropout": 0.25, "d_model": 32, "n_layers": 2,
            "n_heads": 2, "lora_r": 0, "epochs": args.epochs, "weight_decay": 1e-5,
            "subjects": args.subjects}
+    if args.use_best:
+        import optuna
+        study = optuna.load_study(study_name=args.study, storage=args.storage)
+        cfg.update(study.best_params)
+        cfg["epochs"] = args.epochs
+        cfg["subjects"] = args.subjects
     dataset_files = _dataset_files(cfg["subjects"])
     with tracking.run(cfg, dataset_path=dataset_files):
         f1 = train_one(cfg)
