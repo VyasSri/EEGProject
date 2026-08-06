@@ -21,9 +21,10 @@ N_CH = 22  # matches contracts.N_CHANNELS (BNCI2014001 training montage)
 SFREQ = 250
 CYCLE_S = 4.0  # seconds per imagined state
 
-# channel indices we'll treat as "left motor cortex" / "right motor cortex"
-LEFT_CH = [7, 8, 9]
-RIGHT_CH = [11, 12, 13]
+# channel indices we'll treat as "left motor cortex" / "right motor cortex",
+# matching BNCI2014001's channel order (C5, C3, C1, Cz, C2, C4, C6 = idx 6-12).
+LEFT_CH = [6, 7, 8]
+RIGHT_CH = [10, 11, 12]
 
 
 def main() -> None:

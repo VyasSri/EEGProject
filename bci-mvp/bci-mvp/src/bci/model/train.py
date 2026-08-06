@@ -78,12 +78,14 @@ def _window_trials(X: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray
     return np.stack(windows), np.array(labels, dtype=np.int64)
 
 
-def train_one(cfg: dict, trial=None) -> float:
+def train_one(cfg: dict, trial=None, model=None) -> float:
     device = "cuda" if torch.cuda.is_available() else "cpu"
     Xtr, ytr, Xval, yval = load_dataset(cfg)
     Xtr, ytr, Xval, yval = (t.to(device) for t in (Xtr, ytr, Xval, yval))
 
-    model = build_model(cfg).to(device)
+    if model is None:
+        model = build_model(cfg)
+    model = model.to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=cfg["lr"],
                             weight_decay=cfg.get("weight_decay", 1e-5))
     lossf = nn.CrossEntropyLoss()
@@ -155,11 +157,11 @@ def main() -> None:
         cfg["subjects"] = args.subjects
     dataset_files = _dataset_files(cfg["subjects"])
     with tracking.run(cfg, dataset_path=dataset_files):
-        f1 = train_one(cfg)
+        model = build_model(cfg)
+        f1 = train_one(cfg, model=model)
         print("best F1:", f1)
         if args.export:
-            model = build_model(cfg)
-            export_onnx(model)
+            export_onnx(model.to("cpu"))
 
 
 if __name__ == "__main__":
